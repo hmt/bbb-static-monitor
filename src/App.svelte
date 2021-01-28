@@ -8,6 +8,7 @@
   let secret: string;
   let json;
   let laden: boolean;
+  let interval: number = 5;
 
   $: url =
     server && secret
@@ -39,7 +40,7 @@
     }
     laden = false;
   }
-  setInterval(get_stats, 5000);
+  setInterval(get_stats, interval*1000);
 </script>
 
 <div class="container">
@@ -60,33 +61,45 @@
           <p class="control is-expanded">
             <input
               class="input"
-              type="email"
+              type="password"
               placeholder="Secret"
               bind:value={secret}
             />
           </p>
         </div>
-        <button
-          class="button"
-          class:is-success={json?.response.returncode === "SUCCESS"}
-          class:is-warning={!json}
-          class:is-danger={json?.response.returncode !== "SUCCESS"}
-          class:is-loading={laden}
-        />
+        <div class="field">
+          <p class="control is-expanded">
+            <input
+              class="input"
+              type="number"
+              placeholder="Interval"
+              bind:value={interval}
+            />
+          </p>
+        </div>
+        {#if json?.response.returncode === "SUCCESS"}
+          <i class="material-icons has-text-success">check_circle</i>
+        {:else if !json}
+          <i class="material-icons has-text-danger">offline_bolt</i>
+        {:else if laden}
+          <i class="material-icons has-text-link">change_circle</i>
+        {:else}
+          <i class="material-icons has-text-warning">pause_circle</i>
+        {/if}
       </div>
     </div>
     {#if json?.response.returncode === "SUCCESS" && json?.response.messageKey !== "noMeetings"}
       {#each [json.response.meetings?.meeting]
         .flat()
         .filter((m) => !m.isBreakout) as m}
-        <div class="box">
+        <div class="box has-background-primary-light">
           <Room {m} />
           {#each [json.response.meetings?.meeting]
             .flat()
             .filter((b) =>
               m.breakoutRooms?.breakout.includes(b.meetingID)
             ) as m}
-            <div class="box">
+            <div class="box has-background-warning-light">
               <Room {m} />
             </div>
           {/each}
