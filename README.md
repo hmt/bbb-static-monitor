@@ -5,6 +5,7 @@ You will have to allow CORS headers on your BBB instance or use a browser extens
 
 To enable CORS headers on your server add this location to the other loacations in `/etc/bigbluebutton/nginx/web.nginx`
 
+```
 location /bigbluebutton/api/getMeetings {
   proxy_pass         http://127.0.0.1:8090;
   proxy_redirect     default;
@@ -15,7 +16,7 @@ location /bigbluebutton/api/getMeetings {
   add_header Access-Control-Allow-Headers  Content-Type;
   add_header Access-Control-Max-Age        86400;
 }
-
+```
 Then restart your nginx service: `sudo /etc/init.d/nginx restart`
 
 Once on the page fill in your `server` address and the `shared secret`. You can get the `shared secret` by running `bbb-conf --secret` on your BBB server. The number to the right allows you to set the interval for data polling.
