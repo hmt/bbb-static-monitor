@@ -2,118 +2,68 @@
   import "bulma/css/bulma.css";
   import parser from "fast-xml-parser";
   import sha1 from "jssha/dist/sha1";
-  import Room from "./Room.svelte";
 
-  let server: string;
-  let secret: string;
-  let json;
-  let laden: boolean;
-  let interval: number = 5;
+  import { url, server, secret, interval, status } from "./store";
+  import Meeting from "./Meeting.svelte";
+  import type { meeting } from "./types";
 
-  $: url =
-    server && secret
-      ? `${server}/bigbluebutton/api/getMeetings?checksum=${getHash(secret)}`
-      : undefined;
-  $: url && get_stats();
-  $: console.log(json);
+  import Banner from "./Banner.svelte";
+  import Settings from "./Settings.svelte";
 
-  function getHash(message) {
+  let meetings: Array<meeting>;
+  let json: { response: { meetings: { meeting: meeting | Array<meeting> } } };
+
+  function getHash(message: string) {
     const hash = new sha1("SHA-1", "TEXT");
     hash.update(`getMeetings${message}`);
     return hash.getHash("HEX");
   }
 
   async function get_stats() {
-    if (!url) {
+    if (!$url) {
       json = null;
       return;
     }
     try {
-      laden = true;
-      const res = await fetch(url);
+      $status = 'laden';
+      const res = await fetch($url);
       if (!res.ok) throw "Fehler beim Laden der Seite";
-      const xml = await res.text();
+			const xml = await res.text();
+			$status = 'ok'
       json = parser.parse(xml);
     } catch (e) {
       console.log("Server nicht erreichbar: ", e);
-      json = null;
+			json = null;
+			$status = `Fehler: ${e}`
     }
-    laden = false;
   }
-  setInterval(get_stats, interval*1000);
+  $: $url =
+    $server && $secret
+      ? `${$server}/bigbluebutton/api/getMeetings?checksum=${getHash($secret)}`
+      : undefined;
+  $: console.log(json);
+  $: $url && get_stats();
+  $: meetings = json && [json?.response.meetings?.meeting].flat();
+
+  setInterval(get_stats, $interval * 1000);
 </script>
 
 <div class="container">
+	<Settings/>
   <section class="section">
-    <div class="field is-horizontal">
-      <div class="field-body">
-        <div class="field">
-          <p class="control is-expanded">
-            <input
-              class="input"
-              type="text"
-              placeholder="Server z.B. https://bbb.schule.de"
-              bind:value={server}
-            />
-          </p>
-        </div>
-        <div class="field">
-          <p class="control is-expanded">
-            <input
-              class="input"
-              type="password"
-              placeholder="Secret"
-              bind:value={secret}
-            />
-          </p>
-        </div>
-        <div class="field">
-          <p class="control is-expanded">
-            <input
-              class="input"
-              type="number"
-              placeholder="Interval"
-              bind:value={interval}
-            />
-          </p>
-        </div>
-        {#if json?.response.returncode === "SUCCESS"}
-          <i class="material-icons has-text-success">check_circle</i>
-        {:else if !json}
-          <i class="material-icons has-text-danger">offline_bolt</i>
-        {:else if laden}
-          <i class="material-icons has-text-link">change_circle</i>
-        {:else}
-          <i class="material-icons has-text-warning">pause_circle</i>
-        {/if}
-      </div>
-    </div>
-    {#if json?.response.returncode === "SUCCESS" && json?.response.messageKey !== "noMeetings"}
-      {#each [json.response.meetings?.meeting]
-        .flat()
-        .filter((m) => !m.isBreakout) as m}
-        <div class="box has-background-primary-light">
-          <Room {m} />
-          {#each [json.response.meetings?.meeting]
-            .flat()
-            .filter((b) =>
-              m.breakoutRooms?.breakout.includes(b.meetingID)
-            ) as m}
-            <div class="box has-background-warning-light">
-              <Room {m} />
-            </div>
+    {#if meetings}
+      <Banner {json} {meetings} />
+      {#each meetings.filter((m) => !m.isBreakout) as meeting}
+        <Meeting {meeting}>
+          {#each meetings.filter((b) =>
+            [meeting.breakoutRooms?.breakout].flat().includes(b.meetingID)
+          ) as breakout}
+            <Meeting meeting={breakout} />
           {/each}
-        </div>
-      {:else}
-        Keine offenen Räume gefunden
+        </Meeting>
       {/each}
-    {:else if json?.response.returncode === "SUCCESS" && json?.response.messageKey === "noMeetings"}
-      Zur Zeit sind keine Räume aktiv. Starte doch eine Konferenz …
     {:else}
-      Einen gültigen Server und das Shared Secret angeben und es geht los. Es
-      werden keine Daten an dritte Server übertragen.
-      <br />
-      Zur Sicherheit kann man das Network Tab in den Developer Tools beobachten…
+      <Banner />
     {/if}
   </section>
 </div>
