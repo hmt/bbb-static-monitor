@@ -25,31 +25,39 @@
       return;
     }
     try {
-      $status = 'laden';
+      $status = "laden";
       const res = await fetch($url);
       if (!res.ok) throw "Fehler beim Laden der Seite";
-			const xml = await res.text();
-			$status = 'ok'
+      const xml = await res.text();
+      $status = "ok";
       json = parser.parse(xml);
     } catch (e) {
       console.log("Server nicht erreichbar: ", e);
-			json = null;
-			$status = `Fehler: ${e}`
+      json = null;
+      $status = `Fehler: ${e}`;
     }
   }
+  console.info(
+		`%cWillkommen in der Konsole des BBB-Exporters. Hier kannst Du Fehler
+		nachschauen und die Ergebnisse der Api-Abfrage als JSON auslesen. Man kann
+		in Firefox das gesamte Objekt kopieren, wenn man mit der rechten Maustaste
+		auf den "response"-Teil des JSON klickt. Im Texteditor eingefügt, lässt sich
+		alles besser betrachten.`, 'color: blue'
+  );
   $: $url =
     $server && $secret
       ? `${$server}/bigbluebutton/api/getMeetings?checksum=${getHash($secret)}`
       : undefined;
-  $: console.log(json);
+  $: console.log("JSON: ", json);
   $: $url && get_stats();
-  $: meetings = json && [json?.response.meetings?.meeting].flat();
+  $: meetings =
+    json && [json?.response.meetings?.meeting].flat().filter(Boolean);
 
   setInterval(get_stats, $interval * 1000);
 </script>
 
 <div class="container">
-	<Settings/>
+  <Settings />
   <section class="section">
     {#if meetings}
       <Banner {json} {meetings} />

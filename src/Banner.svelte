@@ -10,7 +10,7 @@
   class:is-info={json}
   class:is-warning={!json}
 >
-  {#if json}
+  {#if json && meetings.length}
     <div class="level-item has-text-centered">
       <div>
         <p class="heading">Räume</p>
@@ -39,6 +39,12 @@
         <p class="title">
           {meetings.reduce((sum, m) => sum + m.videoCount, 0)}
         </p>
+      </div>
+    </div>
+  {:else if json && !meetings.length}
+    <div class="level-item has-text-centered">
+      <div>
+        <p class="heading">Es sind momentan keine Räume offen. Mach doch mal wieder eine BBB-Konferenz!</p>
       </div>
     </div>
   {:else}
