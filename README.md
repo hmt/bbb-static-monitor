@@ -1,4 +1,5 @@
 ## Static monitoring solution for BigBlueButton
+
 Simple monitoring site that runs as a static page. Can be hosted anywhere and does not need a server to run.
 
 You will have to allow CORS headers on your BBB instance or use a browser extension to receive the data (try Cors Everywhere for FireFox).
@@ -17,6 +18,7 @@ location /bigbluebutton/api/getMeetings {
   add_header Access-Control-Max-Age        86400;
 }
 ```
+
 Then restart your nginx service: `sudo /etc/init.d/nginx restart`
 
 Once on the page fill in your `server` address and the `shared secret`. You can get the `shared secret` by running `bbb-conf --secret` on your BBB server. The number to the right allows you to set the interval for data polling.
@@ -33,6 +35,8 @@ npm run dev
 ```
 
 You can then open your browser to https://localhost:5000 for a local instance of the page.
+
+Or you go to [releases](https://github.com/hmt/bbb-static-monitor/releases) and download `bbb-monitor.zip`. Unzip and open the `index.html` with your browser.
 
 If you want to contribute feel free to open a pull request or open an issue.
 
