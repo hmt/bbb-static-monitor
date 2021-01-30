@@ -34,7 +34,7 @@ jobs:
       - name: Build
         run: npm run build -m
       - name: zip
-        run: zip bbb-monitor.zip ./public
+        run: zip -r bbb-monitor.zip ./public
       - uses: ncipollo/release-action@v1
         with:
           artifacts: "bbb-monitor.zip"
