@@ -1,0 +1,43 @@
+name: Build and release bbb-monitor
+on:
+  push:
+    branches:
+      - 'master'
+    tags-ignore:
+      - '*.*.*'
+jobs:
+  release:
+    runs-on: ${{ matrix.os }}
+    if: "!contains(github.event.head_commit.message, 'ci skip')"
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+    steps:
+      - name: Check out Git repository
+        uses: actions/checkout@v1
+      - name: Get npm cache directory
+        id: npm-cache
+        run: |
+          echo "::set-output name=dir::$(npm config get cache)"
+      - uses: actions/cache@v1
+        with:
+          path: ${{ steps.npm-cache.outputs.dir }}
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+      - name: Install Node.js, NPM
+        uses: actions/setup-node@v1
+        with:
+          node-version: 15
+      - name: Install Dependencies
+        run: npm install
+      - name: Build
+        run: npm run build -m
+      - name: zip
+        run: zip bbb-monitor.zip ./public
+      - uses: ncipollo/release-action@v1
+        with:
+          artifacts: "bbb-monitor.zip"
+          allowUpdates: true
+          tag: v1.0.${{ github.run_number }}
+          token: ${{ secrets.GITHUB_TOKEN }}
