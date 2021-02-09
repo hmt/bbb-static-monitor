@@ -1,8 +1,11 @@
 <script lang="ts">
+  import Settings from "./Settings.svelte";
   import type { meeting } from "./types";
   import { settings } from "./store";
-  export let json: object;
-  export let meetings: meeting[];
+
+  export let json: object = undefined;
+  export let meetings: meeting[] = undefined;
+  export let status: string | undefined;
 </script>
 
 <nav
@@ -44,7 +47,10 @@
   {:else if json && !meetings.length}
     <div class="level-item has-text-centered">
       <div>
-        <p class="heading">Es sind momentan keine Räume offen. Mach doch mal wieder eine BBB-Konferenz!</p>
+        <p class="heading">
+          Es sind momentan keine Räume offen. Mach doch mal wieder eine
+          BBB-Konferenz!
+        </p>
       </div>
     </div>
   {:else}
@@ -54,16 +60,20 @@
       </div>
     </div>
   {/if}
-  <div class="level-item has-text-centered">
-    <div>
-      <p class="heading">&nbsp;</p>
-      <p class="title">
-        <i
-          class="material-icons is-clickable"
-          style="font-size: 3rem"
-          on:click={(_) => ($settings = true)}>settings</i
-        >
-      </p>
+  <div class="level-right">
+    <div class="level-item has-text-centered">
+      <div>
+        <p class="heading">&nbsp;</p>
+        <p class="title">
+          <i
+            class="material-icons is-clickable"
+            style="font-size: 3rem"
+            on:click={(_) => ($settings = !$settings)}>settings</i
+          >
+        </p>
+      </div>
     </div>
   </div>
 </nav>
+
+<Settings {status} />
