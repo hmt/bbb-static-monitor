@@ -1,6 +1,6 @@
 ## Static monitoring solution for BigBlueButton
 
-Simple monitoring site that runs as a static page. Can be hosted anywhere and does not need a server to run.
+Simple monitoring site that runs as a static page. Can be hosted anywhere and does not need a server to run. Multiple BBB servers are supported.
 
 ![Screenshot](./public/bbb-monitor.png)
 
