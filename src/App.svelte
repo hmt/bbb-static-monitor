@@ -2,10 +2,10 @@
   import "bulma/css/bulma.css";
   import Server from "./Server.svelte";
   import { server_list, selected } from "./store";
-  import { fade } from 'svelte/transition';
 
   let status: Array<string> = []
-  function get_status_icon (key) {
+
+  function get_status_icon (key: string): string {
     switch (key) {
       case 'ok':
         return 'check_circle'

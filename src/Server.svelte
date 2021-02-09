@@ -16,7 +16,7 @@
     hash.update(`getMeetings${message}`);
     return hash.getHash("HEX");
   }
-  async function get_stats() {
+  async function get_stats(): Promise<void> {
     if (!url) {
       json = null;
       status = undefined;
