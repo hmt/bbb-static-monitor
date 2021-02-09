@@ -3,10 +3,11 @@
   import parser from "fast-xml-parser";
   import sha1 from "jssha/dist/sha1";
   import Meeting from "./Meeting.svelte";
-  import type { meeting } from "./types";
+  import type { meeting, server } from "./types";
   import Banner from "./Banner.svelte";
 
-  let status: string | undefined = undefined;
+  export let server: server
+  export let status: string | undefined = undefined;
   let meetings: Array<meeting>;
   let json: { response: { meetings: { meeting: meeting | Array<meeting> } } };
 
@@ -36,29 +37,31 @@
   }
 
   $: url =
-    $selected.host && $selected.secret
-      ? `${$selected.host}/bigbluebutton/api/getMeetings?checksum=${getHash(
-          $selected.secret
+    server.host && server.secret
+      ? `${server.host}/bigbluebutton/api/getMeetings?checksum=${getHash(
+          server.secret
         )}`
       : undefined;
-  $: $selected && get_stats();
+  $: server === $selected && get_stats();
   $: meetings =
     json && [json?.response.meetings?.meeting].flat().filter(Boolean);
 
-  setInterval(get_stats, $selected.interval * 1000);
+  get_stats()
+  setInterval(get_stats, server.interval * 1000);
 </script>
-
-{#if meetings}
-  <Banner {json} {meetings} {status} />
-  {#each meetings.filter((m) => !m.isBreakout) as meeting}
-    <Meeting {meeting}>
-      {#each meetings.filter((b) =>
-        [meeting.breakoutRooms?.breakout].flat().includes(b.meetingID)
-      ) as breakout}
-        <Meeting meeting={breakout} />
-      {/each}
-    </Meeting>
-  {/each}
-{:else}
-  <Banner {status} />
+{#if server === $selected}
+  {#if meetings}
+    <Banner {json} {meetings} {status} />
+    {#each meetings.filter((m) => !m.isBreakout) as meeting}
+      <Meeting {meeting}>
+        {#each meetings.filter((b) =>
+          [meeting.breakoutRooms?.breakout].flat().includes(b.meetingID)
+        ) as breakout}
+          <Meeting meeting={breakout} />
+        {/each}
+      </Meeting>
+    {/each}
+  {:else}
+    <Banner {status} />
+  {/if}
 {/if}

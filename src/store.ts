@@ -4,7 +4,13 @@ import type { server, CustomStore } from "./types";
 let sel: server, list: server[]
 
 function server_create() {
-  const { subscribe, update, set }: Writable<server[]> = writable(JSON.parse(window.localStorage.getItem("servers")) || [{ name: "", host: "", secret: "", interval: 15 }]);
+  // legacy migration
+  const interval: number = parseInt(window.localStorage.getItem("interval")) || 15;
+  const host: string = window.localStorage.getItem("server") || "";
+  const secret: string = window.localStorage.getItem("secret") || "";
+
+  const { subscribe, update, set }: Writable<server[]> = writable(JSON.parse(window.localStorage.getItem("servers")) || [{ name: "", host, secret, interval }]);
+  // const { subscribe, update, set }: Writable<server[]> = writable(JSON.parse(window.localStorage.getItem("servers")) || [{ name: "", host: "", secret: "", interval: 15 }]);
 
   return {
     subscribe, set, update,

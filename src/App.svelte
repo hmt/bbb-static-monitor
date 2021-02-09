@@ -2,17 +2,31 @@
   import "bulma/css/bulma.css";
   import Server from "./Server.svelte";
   import { server_list, selected } from "./store";
-</script>
+  import { fade } from 'svelte/transition';
+
+  let status: Array<string> = []
+  function get_status_icon (key) {
+    switch (key) {
+      case 'ok':
+        return 'check_circle'
+      case 'laden':
+        return 'loop'
+      default:
+        return 'offline_bolt'
+    }
+  }
+  </script>
 
 <div class="container">
   <div class="tabs">
     <ul>
-      {#each $server_list as s}
+      {#each $server_list as s,i}
         <li class:is-active={$selected === s}>
           <!-- svelte-ignore a11y-missing-attribute -->
           <a on:click={(_) => ($selected = s)}
-            >{s.name || "Namenloser Server"}</a
-          >
+            >{s.name || "Namenloser Server"}
+              <i class="material-icons">&nbsp;{get_status_icon(status[i])}</i>
+          </a>
         </li>
       {/each}
       <li>
@@ -26,5 +40,7 @@
       </li>
     </ul>
   </div>
-  <Server />
+  {#each $server_list as s,i}
+    <Server server={s} bind:status={status[i]}/>
+  {/each}
 </div>
