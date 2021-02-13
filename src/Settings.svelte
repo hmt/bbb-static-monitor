@@ -1,6 +1,9 @@
 <script lang="ts">
   import { selected, settings, server_list } from "./store";
-  export let status: string | undefined;
+  const update_server = () => $selected.update()
+  $: host = $selected.host
+  $: secret = $selected.secret
+  $: (secret || host) && update_server()
 </script>
 
 <div class="modal" class:is-active={$settings}>
@@ -74,19 +77,6 @@
         class="is-extended button is-primary"
         on:click={(_) => ($settings = false)}>Schließen</button
       >
-      {#if status}
-        <span class="ml-4 mr-4">
-          Verbindung:
-          <span
-            class="tag"
-            class:is-success={status === "ok"}
-            class:is-danger={status.startsWith("Fehler")}
-            class:is-warning={status === "laden"}
-          >
-            {status}
-          </span>
-        </span>
-      {/if}
       <button class="is-extended button is-danger" on:click={server_list.remove}>Löschen</button>
     </footer>
   </div>

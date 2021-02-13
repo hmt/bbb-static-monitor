@@ -1,35 +1,42 @@
 import { Writable, writable } from "svelte/store";
-import type { server, CustomStore } from "./types";
+import { Server } from './server'
 
-let sel: server, list: server[]
+let list: Server[]
+let sel: Server
 
-function server_create() {
+function backup (servers) {
+  window.localStorage.setItem(`servers`, JSON.stringify(servers.map(s=>s.to_object()))); 
+}
+function restore () {
+  const servers = window.localStorage.getItem("servers")
+  if (servers) {
+    return JSON.parse(servers).map(options => server_create(options))
+  }
   // legacy migration
-  const interval: number = parseInt(window.localStorage.getItem("interval")) || 15;
-  const host: string = window.localStorage.getItem("server") || "";
-  const secret: string = window.localStorage.getItem("secret") || "";
+    const interval: number = parseInt(window.localStorage.getItem("interval")) || 15;
+    const host: string = window.localStorage.getItem("server") || "";
+    const secret: string = window.localStorage.getItem("secret") || "";
+  const server = server_create({ name: "", host, secret, interval })
+  return [server]
+}
+function server_create (options) {
+  const store: Server = new Server(options)
+  return store
+}
 
-  const { subscribe, update, set }: Writable<server[]> = writable(JSON.parse(window.localStorage.getItem("servers")) || [{ name: "", host, secret, interval }]);
-  // const { subscribe, update, set }: Writable<server[]> = writable(JSON.parse(window.localStorage.getItem("servers")) || [{ name: "", host: "", secret: "", interval: 15 }]);
-
+function list_create() {
+  const { subscribe, update, set }: Writable<Server[]> = writable(restore());
   return {
     subscribe, set, update,
     add: () => update(server => {
-      const new_list = [...server,
-      {
-        name: "",
-        host: "",
-        secret: "",
-        interval: 15
-      }
-      ]
+      const new_list = [...server, new Server()]
       selected.set(new_list[list.length])
       settings.set(true)
       return new_list
     }),
     remove: () => update(server => {
       if (server.length === 1) {
-        server = [{ name: "", host: "", secret: "", interval: 15 }];
+        server = [new Server()];
         selected.set(server[0])
         return
       }
@@ -44,17 +51,16 @@ function server_create() {
     }),
   };
 }
-
-export const server_list: CustomStore<server[]> = server_create()
+interface CustomStore<T> extends Writable<T> { add: () => void, remove: () => void }
+export const server_list: CustomStore<Server[]> = list_create()
 
 server_list.subscribe(value => {
-  window.localStorage.setItem(`servers`, JSON.stringify(value));
+  backup(value)
   list = value
 })
 
-export const selected: Writable<server> = writable(list[JSON.parse(window.localStorage.getItem("selected")) || 0]);
+export const selected: Writable<Server> = writable(list[0]);
 selected.subscribe(value => {
-  window.localStorage.setItem(`selected`, JSON.stringify(list.findIndex(s=>s === value)));
   sel = value
   server_list.set(list)
 })

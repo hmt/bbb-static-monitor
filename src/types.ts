@@ -1,5 +1,3 @@
-
-  import type { Writable } from "svelte/store";
   export interface attendee {
     fullName: string;
     role: string;
@@ -19,10 +17,3 @@
     videoCount: number;
     attendees: { attendee: attendee | attendee[] }
   }
-  export interface server {
-    name: string;
-    host: string;
-    secret: string;
-    interval: number;
-  }
-  export interface CustomStore<T> extends Writable<T> { add: () => void, remove: () => void }

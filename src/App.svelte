@@ -1,46 +1,24 @@
 <script lang="ts">
   import "bulma/css/bulma.css";
-  import Server from "./Server.svelte";
+  import Widget from "./Widget.svelte";
+  import RoomList from "./RoomList.svelte";
+  import Settings from './Settings.svelte'
   import { server_list, selected } from "./store";
-
-  let status: Array<string> = []
-
-  function get_status_icon (key: string): string {
-    switch (key) {
-      case 'ok':
-        return 'check_circle'
-      case 'laden':
-        return 'loop'
-      default:
-        return 'offline_bolt'
-    }
-  }
-  </script>
+</script>
 
 <div class="container">
-  <div class="tabs">
-    <ul>
-      {#each $server_list as s,i}
-        <li class:is-active={$selected === s}>
-          <!-- svelte-ignore a11y-missing-attribute -->
-          <a on:click={(_) => ($selected = s)}
-            >{s.name || "Namenloser Server"}
-              <i class="material-icons">&nbsp;{get_status_icon(status[i])}</i>
-          </a>
-        </li>
-      {/each}
-      <li>
-        <!-- svelte-ignore a11y-missing-attribute -->
-        <a>
-          <i
-            class="material-icons is-clickable"
-            on:click={server_list.add}>add</i
-          >
-        </a>
-      </li>
-    </ul>
+  <div class="section">
+    <div class="columns">
+      <div class="column is-one-third">
+        {#each $server_list as server}
+          <Widget {server} on:click={_=>$selected = server} active={$selected === server}></Widget>
+        {/each}
+        <button class="button is-fullwidth" on:click={server_list.add}>
+          <i class="material-icons">add</i>
+        </button>
+      </div>
+      <div class="column"><RoomList server={$selected} /></div>
+    </div>
   </div>
-  {#each $server_list as s,i}
-    <Server server={s} bind:status={status[i]}/>
-  {/each}
 </div>
+<Settings />

@@ -2,5 +2,9 @@
   "extends": "@tsconfig/svelte/tsconfig.json",
 
   "include": ["src/**/*"],
-  "exclude": ["node_modules/*", "__sapper__/*", "public/*"]
+  "exclude": ["node_modules/*", "__sapper__/*", "public/*"],
+    "compilerOptions": {
+      "target": "es6",
+      "lib": [ "es2019", "dom" ]
+    }
 }

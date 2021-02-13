@@ -1,6 +1,5 @@
 <script lang="ts">
-  import type { meeting } from "./types";
-
+  import type { meeting } from './types'
   export let meeting: meeting;
 </script>
 

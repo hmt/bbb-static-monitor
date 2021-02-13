@@ -62,7 +62,9 @@ export default {
 		commonjs(),
 		typescript({
 			sourceMap: true, //!production,
-			inlineSources: !production
+			inlineSources: !production,
+			target: "es6",
+			lib: [ "es2019", "dom" ]
 		}),
 
 		// In dev mode, call `npm run start` once
