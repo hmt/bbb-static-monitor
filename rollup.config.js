@@ -8,6 +8,7 @@ import typescript from '@rollup/plugin-typescript';
 import css from 'rollup-plugin-css-only';
 
 const production = !process.env.ROLLUP_WATCH;
+console.log(production)
 
 function serve() {
 	let server;
@@ -33,7 +34,7 @@ function serve() {
 export default {
 	input: 'src/main.ts',
 	output: {
-		sourcemap: true,
+		sourcemap: !production,
 		format: 'iife',
 		name: 'app',
 		file: 'public/build/bundle.js'
@@ -61,7 +62,7 @@ export default {
 		}),
 		commonjs(),
 		typescript({
-			sourceMap: true, //!production,
+			sourceMap: !production,
 			inlineSources: !production,
 			target: "es6",
 			lib: [ "es2019", "dom" ]

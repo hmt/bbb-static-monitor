@@ -2,7 +2,7 @@
 
 Simple monitoring site that runs as a static page. Can be hosted anywhere and does not need a server to run. Multiple BBB servers are supported.
 
-![Screenshot](./public/bbb-monitor.png)
+![Screenshot](./assets/bbb-monitor.png)
 
 You will have to allow CORS headers on your BBB instance or use a browser extension to receive the data (try Cors Everywhere for FireFox).
 
