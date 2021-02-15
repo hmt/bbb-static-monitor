@@ -44,4 +44,6 @@ If you want to contribute feel free to open a pull request or open an issue.
 
 This little project was created with [Svelte](https://svelte.dev)
 
+__This project uses BigBlueButton and is not endorsed or certified by BigBlueButton Inc. BigBlueButton and the BigBlueButton Logo are trademarks of BigBlueButton Inc.__
+
 MIT Licensed
