@@ -21,7 +21,7 @@
         <li>
           {a.fullName} – {@html a.role === "MODERATOR"
             ? "<b>Moderator</b>"
-            : "Teilnehmer"}
+            : ""}
           {#if a.isPresenter}
             <i class="material-icons has-text-link">slideshow</i>
           {/if}

@@ -1,6 +1,7 @@
 import parser from "fast-xml-parser";
 import sha1 from "jssha/dist/sha1"
 import type { meeting } from './types'
+import type {ApexOptions} from 'apexcharts'
 
 export class Server {
   host: string
@@ -15,6 +16,14 @@ export class Server {
   audio: number
   video: number
   teilnehmer: number
+  m: [number, number][]
+  t: [number, number][]
+  a: [number, number][]
+  v: [number, number][]
+  max_m: number
+  max_t: number
+  max_a: number
+  max_v: number
 
   subs: Array<any> = []
 
@@ -24,9 +33,40 @@ export class Server {
     this.secret = options.secret
     this.interval = options.interval
     this.status = "danger"
+    this.m = []
+    this.t = []
+    this.a = []
+    this.v = []
+    this.max_m = 0
+    this.max_t = 0
+    this.max_a = 0
+    this.max_v = 0
+
     try {
       this.update()
     } catch(e) {console.log('Neuer Server angelegt')}
+  }
+  get options (): ApexOptions {
+    return {
+      chart: {
+        height: 200,
+        width: "100%",
+        type: "line",
+      },
+      series: [
+        { name: `Räume (max. ${this.max_m})`, data: this.m },
+        { name: `Teilnehmer (max. ${this.max_t})`, data: this.t },
+        { name: `Audio (max. ${this.max_a})`, data: this.a },
+        { name: `Video (max. ${this.max_v})`, data: this.v },
+      ],
+      stroke: {
+        width: 1,
+        curve: "straight",
+      },
+      xaxis: {
+        type: "datetime",
+      },
+    }
   }
   update (): void {
     if (this.interval_id) clearInterval(this.interval_id)
@@ -77,6 +117,15 @@ export class Server {
       this.teilnehmer = this.meetings.reduce((sum, m) => sum + m.participantCount, 0)
       this.audio = this.meetings.reduce((sum, m) => sum + m.voiceParticipantCount, 0)
       this.video = this.meetings.reduce((sum, m) => sum + m.videoCount, 0)
+      this.max_m = Math.max(this.max_m, this.meetings.length)
+      this.max_t = Math.max(this.max_t, this.teilnehmer)
+      this.max_a = Math.max(this.max_m, this.audio)
+      this.max_v = Math.max(this.max_v, this.video)
+      const t = Date.now()
+      this.m.push([t, this.meetings.length])
+      this.t.push([t, this.teilnehmer])
+      this.a.push([t, this.audio])
+      this.v.push([t, this.video])
     } else { this.status = "danger"}
   }
 	subscribe (handler) {
