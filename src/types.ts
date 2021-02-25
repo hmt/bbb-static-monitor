@@ -16,4 +16,7 @@
     voiceParticipantCount: number;
     videoCount: number;
     attendees: { attendee: attendee | attendee[] }
+    metadata: metadata
   }
+
+  export type metadata = Array<string>

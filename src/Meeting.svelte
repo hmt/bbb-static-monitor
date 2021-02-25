@@ -1,5 +1,6 @@
 <script lang="ts">
   import type { meeting } from './types'
+  import Dropdown from './Dropdown.svelte'
   export let meeting: meeting;
 </script>
 
@@ -14,6 +15,7 @@
     <span>{meeting.participantCount} Teilnehmer</span>
     <span>{meeting.voiceParticipantCount} Audio</span>
     <span>{meeting.videoCount} Video</span>
+    <Dropdown meta={meeting.metadata}/>
   </span>
   <ul>
     {#if meeting.attendees}

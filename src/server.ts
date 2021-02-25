@@ -119,7 +119,7 @@ export class Server {
       this.video = this.meetings.reduce((sum, m) => sum + m.videoCount, 0)
       this.max_m = Math.max(this.max_m, this.meetings.length)
       this.max_t = Math.max(this.max_t, this.teilnehmer)
-      this.max_a = Math.max(this.max_m, this.audio)
+      this.max_a = Math.max(this.max_a, this.audio)
       this.max_v = Math.max(this.max_v, this.video)
       const t = Date.now()
       this.m.push([t, this.meetings.length])
