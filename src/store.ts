@@ -38,7 +38,7 @@ function list_create() {
       if (server.length === 1) {
         server = [new Server()];
         selected.set(server[0])
-        return
+        return server
       }
       for (let i = 0; i < server.length; i++) {
         if (server[i] === sel) {
