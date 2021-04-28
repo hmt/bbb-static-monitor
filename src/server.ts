@@ -70,9 +70,16 @@ export class Server {
   }
   update (): void {
     if (this.interval_id) clearInterval(this.interval_id)
+    try {
     this.url = this.set_url()
     this.get_stats()
     this.interval_id = setInterval(this.get_stats, this.interval * 1000);
+    } catch(e) {
+      console.log(e)
+    }
+  }
+  stop_updating (): void {
+    clearInterval(this.interval_id)
   }
   to_object () {
     return {name: this.name, host: this.host, secret: this.secret, interval: this.interval}
@@ -85,7 +92,7 @@ export class Server {
   set_url () {
     if (this.host && this.secret)
       return `${this.host}/bigbluebutton/api/getMeetings?checksum=${this.get_hash(this.secret)}`
-    else throw Error
+    else throw 'Kein Host angegeben'
   }
   get_hash(message: string) {
     const hash = new sha1("SHA-1", "TEXT");
@@ -94,7 +101,7 @@ export class Server {
   }
   get_stats = async (): Promise<void> => {
     try {
-      this.status = "warning";
+      if (this.status === 'success') this.status = "warning";
       const res = await fetch(this.url);
       if (!res.ok) throw `Fehler beim Laden der Seite: ${res.status}`;
       const xml = await res.text();
