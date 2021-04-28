@@ -11,13 +11,15 @@
     <div class="columns">
       <div class="column is-one-third">
         {#each $server_list as server}
-          <Widget {server} on:click={_=>$selected = server} active={$selected === server}></Widget>
+            <Widget {server} on:click={_=>$selected = server} active={$selected === server}></Widget>
         {/each}
         <button class="button is-fullwidth" on:click={server_list.add}>
           <i class="material-icons">add</i>
         </button>
       </div>
-      <div class="column"><RoomList server={$selected} /></div>
+      <div class="column">
+        <RoomList server={$selected} />
+      </div>
     </div>
   </div>
 </div>
