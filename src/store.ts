@@ -36,12 +36,14 @@ function list_create() {
     }),
     remove: () => update(server => {
       if (server.length === 1) {
+        server[0].stop_updating()
         server = [new Server()];
         selected.set(server[0])
         return server
       }
       for (let i = 0; i < server.length; i++) {
         if (server[i] === sel) {
+          server[i].stop_updating()
           server.splice(i, 1);
           selected.set(server[i] || server[i - 1]);
         }
