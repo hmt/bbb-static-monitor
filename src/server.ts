@@ -70,13 +70,9 @@ export class Server {
   }
   update (): void {
     if (this.interval_id) clearInterval(this.interval_id)
-    try {
-      this.url = this.set_url()
-      this.get_stats()
-      this.interval_id = setInterval(this.get_stats, this.interval * 1000);
-    } catch(e) {
-      this.reset()
-    }
+    this.url = this.set_url()
+    this.get_stats()
+    this.interval_id = setInterval(this.get_stats, this.interval * 1000);
   }
   to_object () {
     return {name: this.name, host: this.host, secret: this.secret, interval: this.interval}
@@ -100,7 +96,7 @@ export class Server {
     try {
       this.status = "warning";
       const res = await fetch(this.url);
-      if (!res.ok) throw "Fehler beim Laden der Seite";
+      if (!res.ok) throw `Fehler beim Laden der Seite: ${res.status}`;
       const xml = await res.text();
       this.handle_data(xml)
     } catch (e) {
@@ -126,7 +122,7 @@ export class Server {
       this.t.push([t, this.teilnehmer])
       this.a.push([t, this.audio])
       this.v.push([t, this.video])
-    } else { this.status = "danger"}
+    } else throw "Fehler beim Parsen des XML (keine SUCCESS-Meldung)"
   }
 	subscribe (handler) {
     this.subs = [...this.subs, handler]
@@ -134,6 +130,7 @@ export class Server {
     return () => this.subs = this.subs.filter(sub => sub !== handler)
   }
   notify_subs () {
+    console.log('UPDATE SUBS')
     this.subs.forEach(sub => sub(this))
   }
 }
