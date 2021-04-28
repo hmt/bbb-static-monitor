@@ -130,7 +130,6 @@ export class Server {
     return () => this.subs = this.subs.filter(sub => sub !== handler)
   }
   notify_subs () {
-    console.log('UPDATE SUBS')
     this.subs.forEach(sub => sub(this))
   }
 }
