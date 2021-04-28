@@ -9,7 +9,13 @@
   $: meetings = $server?.meetings;
 </script>
 
+{#if $server.status !== 'danger'}
 <div use:chart={$server.options} />
+{:else}
+  <div class="notification is-primary">
+    Richte den BBB-Server über das Zahnrad ein, damit hier die Raumübersicht erscheint. Weitere Server lassen sich über das + hinzufügen.
+  </div>
+{/if}
 {#if meetings}
   {#each meetings.filter((m) => !m.isBreakout) as meeting}
     <Meeting {meeting}>
