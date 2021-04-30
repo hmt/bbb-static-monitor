@@ -9,7 +9,7 @@
   $: meetings = $server?.meetings;
 </script>
 
-{#if $server.options}
+{#if $server.status !== 'danger'}
   <div use:chart={$server.options} />
 {:else}
   <div class="notification is-primary">
