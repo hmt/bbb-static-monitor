@@ -1,4 +1,4 @@
-import { Writable, writable } from "svelte/store";
+import { type Writable, writable } from "svelte/store";
 import { Server } from './server'
 
 let list: Server[]

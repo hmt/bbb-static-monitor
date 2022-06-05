@@ -1,4 +1,4 @@
-import parser from "fast-xml-parser";
+import { XMLParser } from "fast-xml-parser";
 import sha1 from "jssha/dist/sha1"
 import type { meeting } from './types'
 import type {ApexOptions} from 'apexcharts'
@@ -11,7 +11,7 @@ export class Server {
 
   url: string
   status: string
-  interval_id: number
+  interval_id: Timer,
   meetings: meeting[]
   audio: number
   video: number
@@ -64,6 +64,7 @@ export class Server {
         curve: "straight",
       },
       xaxis: {
+        labels: {datetimeUTC: false},
         type: "datetime",
       },
     }
@@ -113,6 +114,7 @@ export class Server {
     this.notify_subs()
   }
   handle_data (xml) {
+    const parser = new XMLParser();
     const json = parser.parse(xml);
     if (json.response.returncode === "SUCCESS") {
       this.status = "success"
@@ -124,7 +126,7 @@ export class Server {
       this.max_t = Math.max(this.max_t, this.teilnehmer)
       this.max_a = Math.max(this.max_a, this.audio)
       this.max_v = Math.max(this.max_v, this.video)
-      const t = Date.now()
+      const t = Date.now();
       this.m.push([t, this.meetings.length])
       this.t.push([t, this.teilnehmer])
       this.a.push([t, this.audio])
