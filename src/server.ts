@@ -11,7 +11,7 @@ export class Server {
 
   url: string
   status: string
-  interval_id: Timer,
+  interval_id: NodeJS.Timer
   meetings: meeting[]
   audio: number
   video: number

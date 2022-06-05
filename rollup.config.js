@@ -64,8 +64,8 @@ export default {
 		typescript({
 			sourceMap: !production,
 			inlineSources: !production,
-			target: "es6",
-			lib: [ "es2019", "dom" ]
+			target: "esnext",
+			lib: [ "esnext", "dom" ]
 		}),
 
 		// In dev mode, call `npm run start` once
